@@ -15,8 +15,6 @@ jobs:
       image: owasp/dependency-check
 
     steps:
-      - name: Change permissions (not recommended)
-        run: sudo chmod -R 777 /__w/_temp
       - uses: actions/checkout@v4
       - name: Verificando dependencias
         run: echo "Verificando dependencias"
