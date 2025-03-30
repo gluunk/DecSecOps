@@ -1,4 +1,4 @@
-name: Docker Image CI com Trivy e Dependency-Check
+name: Docker Image CI com Trivy
 
 on:
   push:
@@ -17,12 +17,12 @@ jobs:
         run: echo "::set-output name=now::$(date +%s)"
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag rnpesr-app:${{ steps.timestamp.outputs.now }}
+        run: docker build . --file Dockerfile --tag my-image-name:${{ steps.timestamp.outputs.now }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "rnpesr-app:${{ steps.timestamp.outputs.now }}"
+          image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: owasp/dependency-check
-
+        
     steps:
       - uses: actions/checkout@v4
       - name: Verificando dependencias
