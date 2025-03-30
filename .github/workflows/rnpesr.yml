@@ -1,4 +1,4 @@
-name: Docker Image CI com Trivy
+name: Estudo de Caso - Trivy
 
 on:
   push:
