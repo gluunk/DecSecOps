@@ -25,4 +25,4 @@ jobs:
           image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
           format: "table"
           exit-code: "1"
-          ignore-policy: "trivy-ignore.yaml"
+          severity: "CRITICAL,HIGH" # Verifica apenas falhas CRITICAL e HIGH
