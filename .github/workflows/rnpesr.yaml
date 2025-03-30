@@ -2,8 +2,9 @@ name: Estudo de Caso CI com Segurança
 
 on:
   push:
-    branches:
-      - main # Ou a branch que você usa
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,14 +17,14 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/compose-action@v2
         with:
-          compose-file: docker-compose.ci.yml # Usa o arquivo docker-compose.ci.yml
+          compose-file: docker-compose.yml # Usa o arquivo docker-compose.yml
           up: true
           build: true
 
       - name: Run Trivy vulnerability scanner (App Image)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "rnpesr_app" # Ajuste para o nome da sua imagem app
+          image-ref: "rnpesr_app" # Ajuste para o nome correto da imagem
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
