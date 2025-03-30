@@ -1,2 +1,5 @@
 vulnerabilityIDs:
-  - CVE-2024-6345 # ID da vulnerabilidade a ser ignorada
+  - CVE-2024-6345
+  - CVE-2023-1234
+  - CVE-2022-5678
+  # Adicione mais vulnerabilidades conforme necessário

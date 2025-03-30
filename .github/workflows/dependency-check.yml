@@ -1,0 +1,25 @@
+name: Dependency Check
+
+on:
+  push:
+    branches:
+      - master # Ou a branch que você deseja monitorar
+  pull_request:
+    branches:
+      - master # Ou a branch que você deseja monitorar
+
+jobs:
+  dependency_check:
+    runs-on: ubuntu-latest
+    container:
+      image: owasp/dependency-check
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificando dependencias
+        run: echo "Verificando dependencias"
+      - name: Dependency-Check Core
+        run: |
+          Dependency-Check Core --project "rnpesr-project" --scan . --format "HTML" --out dependency-check-report
+      - name: Exibir relatório Dependency-Check
+        run: cat dependency-check-report.html
