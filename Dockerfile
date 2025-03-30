@@ -2,7 +2,7 @@
 FROM python:3.8-slim
 
 # Defina o diretório de trabalho dentro do container
-WORKDIR /
+WORKDIR /app
 
 # Copie os arquivos necessários para o container
 COPY . .
@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Comando para iniciar o servidor Flask
-CMD ["python", "app/todo_project/run.py"]
+CMD ["python", "app/run.py"]
