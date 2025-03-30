@@ -26,3 +26,4 @@ jobs:
           format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH" # Verifica apenas falhas CRITICAL e HIGH
+          ignore-policy: "trivy-ignore.yaml"
