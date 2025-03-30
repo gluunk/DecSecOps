@@ -1,12 +1,5 @@
-ignore:
-  - vulnerabilityID: "CVE-2022-40897"
-    comment: "Aceitar o risco"
-  - vulnerabilityID: "CVE-2023-2650"
-    comment: "Não relevante para o ambiente atual"
-  - vulnerabilityID: "CVE-2023-3446"
-    comment: "Corrigido manualmente"
-  - vulnerabilityID: "CVE-2023-3817"
-    comment: "Não afeta o sistema"
-  - vulnerabilityID: "CVE-2023-29491"
-    comment: "Aceitar o risco temporariamente"
-    expiredAt: "2023-09-01"
+CVE-2022-40897
+CVE-2023-2650
+CVE-2023-3446
+CVE-2023-3817
+CVE-2023-29491
