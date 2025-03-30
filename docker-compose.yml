@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - rnpesr
+  bandit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /app/venv/bin/bandit -r /app
+    networks:
+      - rnpesr
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - rnpesr
+
+networks:
+  rnpesr:
+    driver: bridge
+
+volumes:
+  grafana_data:
