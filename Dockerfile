@@ -2,7 +2,7 @@
 FROM python:3.8-slim
 
 # Defina o diretório de trabalho dentro do container
-WORKDIR /app
+WORKDIR /
 
 # Copie os arquivos necessários para o container
 COPY . .
