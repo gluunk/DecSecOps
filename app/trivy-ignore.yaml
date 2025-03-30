@@ -1,7 +1,10 @@
-ignore:
-  - vulnerabilityID: "CVE-2024-6345"
-    comment: "Ignorar por ser irrelevante"
-  - vulnerabilityID: "CVE-2023-1234"
-    comment: "Falha já corrigida manualmente"
-  - vulnerabilityID: "CVE-2022-5678"
-    comment: "Não afeta o ambiente atual"
+vulnerabilities:
+  - id: CVE-2022-40897
+    paths:
+      - "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA"
+    statement: Accept the risk
+  - id: CVE-2023-2650
+  - id: CVE-2023-3446
+  - id: CVE-2023-3817
+  - id: CVE-2023-29491
+    expired_at: 2023-09-01
