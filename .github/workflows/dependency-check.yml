@@ -1,25 +1,45 @@
-name: Dependency Check
+name: Dependency Check for DecSecOps
 
 on:
   push:
     branches:
-      - master # Ou a branch que você deseja monitorar
+      - main
   pull_request:
-    branches:
-      - master # Ou a branch que você deseja monitorar
 
 jobs:
-  dependency_check:
+  dependency-check:
     runs-on: ubuntu-latest
-    container:
-      image: owasp/dependency-check
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Verificando dependencias
-        run: echo "Verificando dependencias"
-      - name: Dependency-Check Core
-        run: |
-          Dependency-Check Core --project "rnpesr-project" --scan . --format "HTML" --out dependency-check-report
-      - name: Exibir relatório Dependency-Check
-        run: cat dependency-check-report.html
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8' # Substitua pela versão de Python utilizada no projeto
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install OWASP Dependency-Check CLI
+      run: |
+        curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check-6.5.2-release.zip
+        unzip dependency-check.zip -d dependency-check
+        chmod +x dependency-check/bin/dependency-check.sh
+
+    - name: Run Dependency-Check
+      run: |
+        dependency-check/bin/dependency-check.sh \
+          --project "DecSecOps" \
+          --scan . \
+          --format "ALL" \
+          --out ./dependency-check-report
+
+    - name: Upload Dependency-Check Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-check-report
+        path: ./dependency-check-report
