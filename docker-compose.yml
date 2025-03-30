@@ -24,6 +24,14 @@ services:
       - grafana_data:/var/lib/grafana
     networks:
       - rnpesr
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Certifique-se de ter o arquivo prometheus.yml
+    networks:
+      - rnpesr
 
 networks:
   rnpesr:

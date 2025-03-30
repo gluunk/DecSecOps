@@ -1,0 +1,29 @@
+name: Estudo de Caso CI
+
+on:
+  push:
+    branches:
+      - main # Ou a branch que você usa
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: docker-compose.ci.yml # Usa o arquivo docker-compose.ci.yml
+          up: true
+          build: true
+
+      - name: Verificar Prometheus
+        run: curl http://localhost:9090/metrics
+
+      - name: Verificar cAdvisor
+        run: curl http://localhost:8080/metrics
+
+      # Adicione mais passos conforme necessário (testes, deploy, etc.)
