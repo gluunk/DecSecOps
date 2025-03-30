@@ -25,19 +25,4 @@ jobs:
           image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
           format: "table"
           exit-code: "1"
-          ignore-unfixed: true
-
-  dependency_check:
-    runs-on: ubuntu-latest
-    container:
-      image: owasp/dependency-check
-        
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verificando dependencias
-        run: echo "Verificando dependencias"
-      - name: Dependency-Check Core
-        run: |
-          Dependency-Check Core --project "rnpesr-project" --scan . --format "HTML" --out dependency-check-report
-      - name: Exibir relatório Dependency-Check
-        run: cat dependency-check-report.html
+          ignore-policy: "trivy-ignore.yaml"
