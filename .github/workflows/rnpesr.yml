@@ -1,4 +1,4 @@
-name: Estudo de Caso CI
+name: Estudo de Caso CI com Segurança
 
 on:
   push:
@@ -20,10 +20,12 @@ jobs:
           up: true
           build: true
 
-      - name: Verificar Prometheus
-        run: curl http://localhost:9090/metrics
-
-      - name: Verificar cAdvisor
-        run: curl http://localhost:8080/metrics
+      - name: Run Trivy vulnerability scanner (App Image)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "rnpesr_app" # Ajuste para o nome da sua imagem app
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
 
       # Adicione mais passos conforme necessário (testes, deploy, etc.)
