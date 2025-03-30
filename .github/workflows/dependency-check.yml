@@ -15,21 +15,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Baixar e verificar estrutura do OWASP Dependency-Check
-      - name: Download and Extract OWASP Dependency-Check
+      # Baixar e inspecionar OWASP Dependency-Check
+      - name: Download and Inspect OWASP Dependency-Check
         run: |
           curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
           unzip dependency-check.zip -d dependency-check
+          echo "Listing files to find the correct path:"
           ls -R dependency-check
 
-      # Executar o Dependency-Check
+      # Ajustar caminho e executar Dependency-Check
       - name: Run OWASP Dependency-Check
         run: |
           if [ ! -f "dependency-check/bin/dependency-check.sh" ]; then
-            echo "Dependency-Check script not found! Exiting..."
-            exit 1
+            echo "Attempting alternative path..."
+            find dependency-check -name dependency-check.sh -exec chmod +x {} \;
+            PATH=$(find dependency-check -name dependency-check.sh)
           fi
-          dependency-check/bin/dependency-check.sh --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report
+          $PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report
 
       # Fazer upload do relatório
       - name: Upload Dependency-Check Report
