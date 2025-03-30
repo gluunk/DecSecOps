@@ -1,0 +1,7 @@
+ignore:
+  - vulnerabilityID: "CVE-2024-6345"
+    comment: "Ignorar por ser irrelevante"
+  - vulnerabilityID: "CVE-2023-1234"
+    comment: "Falha já corrigida manualmente"
+  - vulnerabilityID: "CVE-2022-5678"
+    comment: "Não afeta o ambiente atual"
