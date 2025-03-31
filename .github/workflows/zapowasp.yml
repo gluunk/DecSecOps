@@ -11,37 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout do repositório
+      # Etapa 1: Checkout do repositório
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Instalar Docker Compose
+      # Etapa 2: Instalar Docker Compose
       - name: Install Docker Compose
         run: |
           curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose version
 
-      # Iniciar os serviços com Docker Compose
+      # Etapa 3: Iniciar os serviços com Docker Compose
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Executar o ZAP Scan
+      # Etapa 4: Executar o ZAP Scan (sem relatório)
       - name: Run ZAP Scan
         run: |
           docker exec $(docker ps -qf "name=zap") zap-baseline.py \
-          -t http://app:5000 \
-          -r /zap/wrk/report.html
+          -t http://app:5000
 
-      # Fazer upload do relatório do ZAP
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: ./zap_workdir/report.html
-        if: always()
-
-      # Parar os serviços com Docker Compose
+      # Etapa 5: Parar os serviços com Docker Compose
       - name: Stop Docker Compose
         if: always()
         run: docker-compose down
