@@ -37,6 +37,7 @@ services:
     volumes:
       - zap_data:/zap/wrk
       - ./relatorios:/zap/wrk
+      - C:/RNPESR/relatorios/zap:/zap/wrk
     command: ["zap-baseline.py", "-t", "http://app:5000"]
     networks:
       - rnpesr
