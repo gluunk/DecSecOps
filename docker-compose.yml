@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - zap_data:/zap/wrk
+      - ./relatorios:/zap/wrk
+      - ./relatorios/zap:/zap/wrk
     ports:
       - "5000:5000"
     networks:
@@ -51,9 +55,3 @@ networks:
 
 volumes:
   grafana_data:
-  zap_reports:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./relatorios/zap
-      o: bind
