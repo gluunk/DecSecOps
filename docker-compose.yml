@@ -37,10 +37,11 @@ services:
     volumes:
       - zap_data:/zap/wrk
       - ./relatorios:/zap/wrk
-      - C:/RNPESR/relatorios/zap:/zap/wrk
+      - ./relatorios/zap:/zap/wrk
     command: ["zap-baseline.py", "-t", "http://app:5000"]
     networks:
       - rnpesr
+    user: "1000:1000"  # Define UID e GID para o contêiner
     depends_on:
       - app
 
