@@ -7,23 +7,24 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  analyze-app-container:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate timestamp
-        id: timestamp
-        run: echo "::set-output name=now::$(date +%s)"
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:${{ steps.timestamp.outputs.now }}
+      - name: Start Docker Compose
+        run: docker-compose up -d app
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
-          format: "table"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
-          trivyignores: "./trivyignore.yaml"
+      - name: Run Trivy on App Container
+        run: |
+          trivy --exit-code 1 \
+                --severity CRITICAL,HIGH \
+                --format table \
+                --ignorefile ./trivyignore.yaml \
+                docker-container app
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker-compose down
