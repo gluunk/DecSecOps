@@ -29,6 +29,7 @@ jobs:
       # Executar o ZAP Scan
       - name: Run ZAP Scan
         run: |
+          docker exec $(docker ps -qf "name=zap") sh -c "mkdir -p /zap/wrk && chmod -R 777 /zap/wrk"
           docker exec $(docker ps -qf "name=zap") zap-baseline.py \
           -t http://app:5000 \
           -r /zap/wrk/report.html
