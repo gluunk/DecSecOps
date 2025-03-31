@@ -53,3 +53,4 @@ volumes:
   grafana_data:
   zap_reports:
     driver: local
+      - ./relatorios/zap:/zap/wrk
