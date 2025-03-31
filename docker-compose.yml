@@ -32,18 +32,18 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - rnpesr
-  zap:
-    image: ghcr.io/zaproxy/zaproxy:stable
-    volumes:
-      - zap_data:/zap/wrk
-      - ./relatorios:/zap/wrk
-      - ./relatorios/zap:/zap/wrk
-    command: ["zap-baseline.py", "-t", "http://app:5000"]
-    networks:
-      - rnpesr
-    user: "1000:1000"  # Define UID e GID para o contêiner
-    depends_on:
-      - app
+  #zap:
+  #  image: ghcr.io/zaproxy/zaproxy:stable
+  #  volumes:
+  #    - zap_data:/zap/wrk
+  #    - ./relatorios:/zap/wrk
+  #    - ./relatorios/zap:/zap/wrk
+  #  command: ["zap-baseline.py", "-t", "http://app:5000"]
+  #  networks:
+  #    - rnpesr
+  #  user: "1000:1000"  # Define UID e GID para o contêiner
+  #  depends_on:
+  #    - app
 
 networks:
   rnpesr:
