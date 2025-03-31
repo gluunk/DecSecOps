@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - zap_data:/zap/wrk
       - ./relatorios/zap:/zap/wrk
     ports:
       - "5000:5000"
