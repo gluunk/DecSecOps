@@ -32,7 +32,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - rnpesr
-  #zap:
+  zap:
   #  image: ghcr.io/zaproxy/zaproxy:stable
   #  volumes:
   #    - zap_data:/zap/wrk
