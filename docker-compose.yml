@@ -53,6 +53,7 @@ volumes:
   grafana_data:
   zap_reports:
     driver: local
-      - zap_data:/zap/wrk
-      - ./relatorios:/zap/wrk
-      - ./relatorios/zap:/zap/wrk
+    driver_opts:
+      type: none
+      device: ./relatorios/zap
+      o: bind
