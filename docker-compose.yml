@@ -38,7 +38,6 @@ services:
       - zap_data:/zap/wrk
       - ./relatorios:/zap/wrk
     command: ["zap-baseline.py", "-t", "http://app:5000"]
-    user: 1000:1000 # Substitua pelos IDs de usuário e grupo apropriados
     networks:
       - rnpesr
     depends_on:
