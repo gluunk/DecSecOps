@@ -24,7 +24,9 @@ jobs:
 
       # Etapa 3: Iniciar os serviços com Docker Compose
       - name: Start Docker Compose
-        run: docker-compose up -d --build
+        run: |
+          docker-compose up -d --build
+          docker exec $(docker ps -qf "name=zap") chmod -R 777 /zap/wrk
 
       # Etapa 4: Executar o ZAP Scan
       - name: Run ZAP Scan
