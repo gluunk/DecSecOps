@@ -1,0 +1,40 @@
+name: DAST Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  dast-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Configurar OWASP ZAP
+      - name: Start OWASP ZAP
+        run: |
+          docker run -d --name zap -p 8080:8080 -p 8090:8090 \
+          owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080
+
+      # Executar o scan com OWASP ZAP
+      - name: Run ZAP Scan
+        run: |
+          docker exec zap zap-cli quick-scan --self-contained --start-options "-config api.disablekey=true" http://<URL_DA_APLICACAO>
+
+      # Gerar relatório
+      - name: Generate ZAP Report
+        run: |
+          docker exec zap zap-cli report -o zap-report.html -f html
+          docker cp zap:/zap/zap-report.html .
+
+      # Fazer upload do relatório como artefato
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report.html

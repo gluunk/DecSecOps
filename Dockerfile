@@ -4,17 +4,24 @@ FROM python:3.8-slim
 # Defina o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copie os arquivos necessários para o container
-COPY . .
+# Copie apenas os arquivos necessários para instalar as dependências
+COPY requirements.txt ./
 
 # Instale as dependências do projeto
 RUN python -m venv /app/venv && \
     /app/venv/bin/pip install --upgrade pip && \
-    /app/venv/bin/pip install bandit
-RUN pip install --no-cache-dir -r requirements.txt
+    /app/venv/bin/pip install -r requirements.txt && \
+    /app/venv/bin/pip install prometheus_client bandit
+
+# Copie os demais arquivos para o container
+COPY . .
 
 # Exponha a porta usada pelo Flask
 EXPOSE 5000
 
+# Configuração do Prometheus
+ENV PROMETHEUS_METRICS_PORT=9090
+ENV PROMETHEUS_METRICS_ENABLED=true
+
 # Comando para iniciar o servidor Flask
-CMD ["python", "app/run.py"]
+CMD ["/app/venv/bin/python", "app/run.py"]
