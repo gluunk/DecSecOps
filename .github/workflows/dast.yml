@@ -1,32 +1,40 @@
-name: ZAP Security Scan
+name: DAST Pipeline
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
-  zap_scan:
+  dast-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      # Checkout do código
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Start Docker Compose
-        run: docker-compose up -d --build
+      # Configurar OWASP ZAP
+      - name: Start OWASP ZAP
+        run: |
+          docker run -d --name zap -p 8080:8080 -p 8090:8090 \
+          owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080
 
+      # Executar o scan com OWASP ZAP
       - name: Run ZAP Scan
-        run: docker exec $(docker ps -qf "name=zap") zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html
+        run: |
+          docker exec zap zap-cli quick-scan --self-contained --start-options "-config api.disablekey=true" http://<URL_DA_APLICACAO>
 
+      # Gerar relatório
+      - name: Generate ZAP Report
+        run: |
+          docker exec zap zap-cli report -o zap-report.html -f html
+          docker cp zap:/zap/zap-report.html .
+
+      # Fazer upload do relatório como artefato
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: relatorios/report.html # ou o caminho que você configurou no volume
-        if: always()
-
-      - name: Stop Docker Compose
-        if: always()
-        run: docker-compose down
+          path: zap-report.html

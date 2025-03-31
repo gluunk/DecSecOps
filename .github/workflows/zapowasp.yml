@@ -1,0 +1,32 @@
+name: ZAP Security Scan
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Start Docker Compose
+        run: docker-compose up -d --build
+
+      - name: Run ZAP Scan
+        run: docker exec $(docker ps -qf "name=zap") zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: relatorios/report.html # ou o caminho que você configurou no volume
+        if: always()
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker-compose down
