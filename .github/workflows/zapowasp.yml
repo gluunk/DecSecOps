@@ -22,6 +22,10 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose version
 
+      # Criar a rede rnpesr se não existir
+      - name: Create Network
+        run: docker network create rnpesr || true
+
       # Iniciar os serviços com Docker Compose
       - name: Start Docker Compose
         run: docker-compose up -d --build
