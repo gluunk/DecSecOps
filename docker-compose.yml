@@ -51,4 +51,5 @@ networks:
 
 volumes:
   grafana_data:
-  zap_data:
+  zap_reports:
+    driver: local
