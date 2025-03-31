@@ -35,16 +35,16 @@ jobs:
         run: |
           docker run --rm --network="rnpesr" ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://app:5000 \
-            -r /zap/wrk/report.html
+      #      -r /zap/wrk/report.html
         continue-on-error: true
 
       # Fazer upload do relatório do ZAP
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: ./relatorios/zap/report.html
-        if: always()
+      #- name: Upload ZAP Report
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: zap-report
+      #    path: ./relatorios/zap/report.html
+      #  if: always()
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
