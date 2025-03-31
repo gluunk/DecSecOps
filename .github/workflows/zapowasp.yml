@@ -33,6 +33,8 @@ jobs:
       # Executar o ZAP Scan diretamente no container da aplicação
       - name: Run ZAP Scan
         run: |
+          mkdir -p ./relatorios/zap
+          chmod -R 777 ./relatorios/zap
           docker run --rm --network="rnpesr" -v $(pwd)/relatorios/zap:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://app:5000 \
             -r /zap/wrk/report.html
