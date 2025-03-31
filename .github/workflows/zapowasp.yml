@@ -15,26 +15,33 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Etapa 2: Iniciar os serviços com Docker Compose
+      # Etapa 2: Instalar Docker Compose
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      # Etapa 3: Iniciar os serviços com Docker Compose
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Etapa 3: Executar o ZAP Scan
+      # Etapa 4: Executar o ZAP Scan
       - name: Run ZAP Scan
         run: |
           docker exec $(docker ps -qf "name=zap") zap-baseline.py \
           -t http://app:5000 \
           -r /zap/wrk/report.html
 
-      # Etapa 4: Fazer upload do relatório do ZAP
+      # Etapa 5: Fazer upload do relatório do ZAP
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: /zap/wrk/report.html # Certifique-se de que o caminho seja válido
+          path: /zap/wrk/report.html
         if: always()
 
-      # Etapa 5: Parar os serviços com Docker Compose
+      # Etapa 6: Parar os serviços com Docker Compose
       - name: Stop Docker Compose
         if: always()
         run: docker-compose down
