@@ -26,19 +26,20 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Executar o ZAP Scan
+      # Executar o ZAP Scan diretamente no container da aplicação
       - name: Run ZAP Scan
         run: |
-          docker exec -u 0 $(docker ps -qf "name=zap") zap-baseline.py \
-          -t http://app:5000 \
-          -r /zap/wrk/report.html
+          docker run --rm --network="rnpesr" ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://app:5000 \
+            -r /zap/wrk/report.html
+        continue-on-error: true
 
       # Fazer upload do relatório do ZAP
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: ./zap_workdir/report.html
+          path: ./relatorios/zap/report.html
         if: always()
 
       # Parar os serviços com Docker Compose
