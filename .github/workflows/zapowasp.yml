@@ -55,36 +55,8 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html &&
-              echo 'pwd: ' && pwd &&
-              echo 'listando arquivos no diretório /zap/wrk' &&
-              ls -lah /zap/wrk &&
-              echo 'find para buscar o arquivo zap_report.html' &&
-              find /zap/wrk -name zap_report.html &&
-              echo 'Verificando se o relatório foi realmente criado...' &&
-              if [ -f /zap/wrk/zap_report.html ]; then
-                echo 'Relatório gerado com sucesso!';
-              else
-                echo 'Erro: Relatório não encontrado!';
-                exit 1;
-              fi"
+              zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html"
         continue-on-error: true
-
-      # Exibir a saída do diretório no GitHub Actions antes de tentar o upload
-      - name: Show ZAP Report Directory in GitHub Actions
-        run: |
-          echo "Diretório de Relatórios ZAP:"
-          ls -lah ./relatorios/zap
-          echo "Buscando arquivos no diretório de relatórios..."
-          find ./relatorios/zap
-
-      # Tentar fazer upload mesmo que o arquivo não exista, garantindo que o erro seja gerado.
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZAP Report
-          path: ./relatorios/zap/zap_report.html
-        if: always()
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
