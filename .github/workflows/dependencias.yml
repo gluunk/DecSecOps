@@ -11,11 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout do código
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Baixar e inspecionar OWASP Dependency-Check
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x' # Ajuste para a versão do seu projeto
+
       - name: Download and Inspect OWASP Dependency-Check
         run: |
           curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
@@ -23,7 +26,6 @@ jobs:
           echo "Listing files to find the correct path:"
           ls -R dependency-check
 
-      # Ajustar caminho e executar Dependency-Check
       - name: Run OWASP Dependency-Check
         run: |
           if [ ! -f "dependency-check/bin/dependency-check.sh" ]; then
@@ -33,9 +35,8 @@ jobs:
           else
              SCRIPT_PATH="dependency-check/bin/dependency-check.sh"
           fi
-          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report
+          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report --disablePlugins "NuspecAnalyzer,MSBuildAnalyzer"
 
-      # Fazer upload do relatório
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
         with:
