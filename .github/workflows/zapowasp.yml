@@ -1,4 +1,4 @@
-name: ZAP Security Scan
+name: Estudo de Caso - Trivy
 
 on:
   push:
@@ -11,55 +11,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout do repositório
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # Instalar Docker Compose
-      - name: Install Docker Compose
+      # Subindo o ZAP primeiro
+      - name: Iniciar ZAP Container
         run: |
-          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose version
+          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable zap.sh -daemon -port 8080
+          docker ps
 
-      # Criar a rede rnpesr se não existir
-      - name: Create Network
-        run: docker network create rnpesr || true
+      # Espera para garantir que o ZAP esteja pronto
+      - name: Aguardar ZAP
+        run: sleep 20
 
-      # Iniciar os serviços com Docker Compose
-      - name: Start Docker Compose
-        run: docker-compose up -d --build
+      # Verificando se o ZAP está acessível
+      - name: Testar Conectividade com o ZAP
+        run: docker exec zap curl -I http://localhost:8080
 
-      # Aguardar o serviço "app" ficar acessível
-      - name: Wait for App to be Ready
+      # Construindo a imagem da aplicação
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "now=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Build da Imagem da Aplicação
+        run: docker build . --file Dockerfile --tag my-image-name:${{ env.now }}
+
+      # Subindo o container da aplicação
+      - name: Iniciar o Container da Aplicação
         run: |
-          echo "Aguardando o serviço app estar acessível..."
-          for i in {1..10}; do
-            if docker exec $(docker ps -qf "name=app") curl -s http://localhost:5000; then
-              echo "Serviço disponível!"
-              break
-            fi
-            echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
-            sleep 5
-          done
+          docker run -d --name app -p 5000:5000 my-image-name:${{ env.now }}
+          docker ps
 
-      # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
-      - name: Run ZAP Scan
-        run: |
-          docker run --network rnpesr_rnpesr \
-            -v $(pwd):/zap/wrk/ \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-full-scan.py -t http://app:5000 -r zap_report.html
+      # Verificando se o app está acessível
+      - name: Testar Conectividade com o App
+        run: docker exec app curl -I http://localhost:5000
 
-      # Publicar o relatório HTML como artefato do GitHub Actions
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
+      # Rodando o Trivy para verificar vulnerabilidades
+      - name: Analisar Vulnerabilidades com Trivy
+        uses: aquasecurity/trivy-action@master
         with:
-          name: ZAP Report
-          path: ./relatorios/zap/report.html
-        if: always()
+          image-ref: "my-image-name:${{ env.now }}"
+          format: "table"
+          exit-code: "1"
+          severity: "CRITICAL,HIGH"
+          trivyignores: "./trivyignore.yaml"
 
-      # Parar os serviços com Docker Compose
-      - name: Stop Docker Compose
-        if: always()
-        run: docker-compose down
+      # Desligando os containers
+      - name: Limpar Containers
+        run: |
+          docker stop app zap
+          docker rm app zap
