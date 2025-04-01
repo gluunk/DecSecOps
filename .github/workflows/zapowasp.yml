@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "Aguardando o serviço app estar acessível..."
           for i in {1..10}; do
-            if docker exec $(docker ps -qf "name=app") curl -s http://localhost:5000; then
+            if docker exec $(docker ps -qf "name=app") curl -s http://app:5000; then
               echo "Serviço disponível!"
               break
             fi
@@ -43,17 +43,17 @@ jobs:
             sleep 5
           done
 
-      # Adiciona um tempo antes de rodar o ZAP
+      # Adicionar um tempo para garantir que os serviços estejam prontos
       - name: Sleep before ZAP
         run: sleep 30
 
-      # Executar o ZAP Scan diretamente compartilhando a rede com o container app
+      # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
       - name: Run ZAP Scan
         run: |
           mkdir -p ./relatorios/zap
-          docker run --rm --user root --network=container:app --name zap-scan \
+          docker run --rm --user root --network=$(docker network ls --format '{{.Name}}' | grep _default) --name zap-scan \
             -v $(pwd)/relatorios/zap:/zap/wrk \
-            ghcr.io/zaproxy/zaproxy:stable bash -c "apt-get update && apt-get install -y dnsutils && sleep 5 && curl -s http://localhost:5000 && zap-baseline.py -t http://localhost:5000 -r /zap/wrk/report.html"
+            ghcr.io/zaproxy/zaproxy:stable bash -c "apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 && zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html"
         continue-on-error: true
 
       # Publicar o relatório HTML como artefato do GitHub Actions
