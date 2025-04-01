@@ -53,13 +53,12 @@ jobs:
           mkdir -p ./relatorios/zap
           docker run --rm --user root --network=decsecops_rnpesr --name zap-scan \
             -v $(pwd)/relatorios/zap:/zap/wrk \
-            # Atualizando para a versão mais recente do ZAP docker image
-            ghcr.io/zaproxy/zaproxy:latest bash -cx "
+            ghcr.io/zaproxy/zaproxy:latest \
+            -c "bash -cx '
               set -x;
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
               echo 'Conteúdo de /zap/wrk antes do zap-baseline.py:' && ls -lah /zap/wrk &&
               echo 'Comando Zap: zap-baseline.py -t http://app:5000 -o /zap/wrk/report.html -f html' &&
-              # Tentando usar -o com o tipo de relatório especificado
               zap-baseline.py -t http://app:5000 -o /zap/wrk/report.html -f html &&
               echo 'Conteúdo de /zap/wrk depois do zap-baseline.py:' && ls -lah /zap/wrk &&
               echo 'Verificando se o relatório foi realmente criado...' &&
@@ -70,7 +69,7 @@ jobs:
                 echo 'Erro: Relatório não encontrado!';
                 find / -name report.html;
                 exit 1;
-              fi"
+              fi'"
         continue-on-error: true
 
       # Verificar se o arquivo do relatório foi gerado
