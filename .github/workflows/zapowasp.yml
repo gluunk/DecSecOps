@@ -45,7 +45,7 @@ jobs:
 
       # Adiciona um tempo antes de rodar o ZAP
       - name: Sleep before ZAP
-        run: sleep 30 # Aumenta o tempo de espera
+        run: sleep 30
 
       # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
       - name: Run ZAP Scan
@@ -55,8 +55,25 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              zap-baseline.py -t http://app:5000 -r 
+              zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html &&
+              ls -lah /zap/wrk &&
+              echo 'Verificando se o relatório foi realmente criado...' &&
+              if [ -f /zap/wrk/report.html ]; then
+                echo 'Relatório gerado com sucesso!';
+              else
+                echo 'Erro: Relatório não encontrado!';
+                exit 1;
+              fi"
         continue-on-error: true
+
+      # Verificar se o arquivo do relatório foi gerado
+      - name: Check Report File
+        run: ls -lah ./relatorios/zap
+
+      # Exibir o relatório diretamente no console
+      - name: Show ZAP Report in Console
+        if: always()
+        run: cat ./relatorios/zap/report.html
 
       # Publicar o relatório HTML como artefato do GitHub Actions
       - name: Upload ZAP Report
