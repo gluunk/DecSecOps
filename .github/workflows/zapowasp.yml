@@ -47,11 +47,15 @@ jobs:
       - name: Sleep before ZAP
         run: sleep 30
 
+      # Listar as redes para depuração
+      - name: List Docker Networks
+        run: docker network ls
+
       # Identificar o nome da rede gerada pelo Docker Compose
       - name: Get Docker Network Name
         id: network_name
         run: |
-          NETWORK_NAME=$(docker network ls --format '{{.Name}}' | grep -E '_default$|_app$')
+          NETWORK_NAME=$(docker network ls --format '{{.Name}}' | grep -E 'default|app|bridge')
           echo "Network name: $NETWORK_NAME"
           echo "network_name=$NETWORK_NAME" >> $GITHUB_ENV
 
