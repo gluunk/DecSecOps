@@ -1,4 +1,4 @@
-name: Estudo de Caso - Trivy
+name: ZAP Security Scan
 
 on:
   push:
@@ -11,13 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate timestamp
-        id: timestamp
-        run: echo "::set-output name=now::$(date +%s)"
+      # Checkout do repositório
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:${{ steps.timestamp.outputs.now }}
+      # Instalar Docker Compose
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      # Iniciar os serviços com Docker Compose
+      - name: Start Docker Compose
+        run: docker-compose up -d --build
+
+      # Aguardar o serviço "app" ficar acessível
+      - name: Wait for App to be Ready
+        run: |
+          echo "Aguardando o serviço app estar acessível..."
+          for i in {1..10}; do
+            if docker exec $(docker ps -qf "name=app") curl -s http://localhost:5000; then
+              echo "Serviço disponível!"
+              break
+            fi
+            echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
+            sleep 5
+          done
 
       # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
       - name: Run ZAP Scan
