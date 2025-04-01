@@ -14,28 +14,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
+      - name: Dependency Check
+        uses: jeremylong/dependency-check-action@v3
         with:
-          dotnet-version: '6.0.x' # Ajuste para a versão do seu projeto
-
-      - name: Download and Inspect OWASP Dependency-Check
-        run: |
-          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.3/dependency-check-8.4.3-release.zip # Substitua pela versão mais recente
-          unzip dependency-check.zip -d dependency-check
-          echo "Listing files to find the correct path:"
-          ls -R dependency-check
-
-      - name: Run OWASP Dependency-Check
-        run: |
-          if [ ! -f "dependency-check/bin/dependency-check.sh" ]; then
-            echo "Attempting alternative path..."
-            find dependency-check -name dependency-check.sh -exec chmod +x {} \;
-            SCRIPT_PATH=$(find dependency-check -name dependency-check.sh)
-          else
-             SCRIPT_PATH="dependency-check/bin/dependency-check.sh"
-          fi
-          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report --disablePlugins "NuspecAnalyzer,MSBuildAnalyzer"
+          project: 'DecSecOps'
+          scan_path: '.'
+          format: 'ALL'
+          output_directory: 'dependency-check-report'
+          suppression_file: 'suppression.xml'
 
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
