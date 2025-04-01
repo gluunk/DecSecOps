@@ -75,6 +75,8 @@ jobs:
         run: |
           echo "Diretório de Relatórios ZAP:"
           ls -lah ./relatorios/zap
+          echo "Buscando arquivos no diretório de relatórios..."
+          find ./relatorios/zap
 
       # Tentar fazer upload mesmo que o arquivo não exista, garantindo que o erro seja gerado.
       - name: Upload ZAP Report
