@@ -26,31 +26,6 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Verificar se o container do app está rodando
-      - name: Verify App Container
-        run: docker ps -a
-
-      # Aguardar o serviço "app" ficar acessível
-      - name: Wait for App to be Ready
-        run: |
-          echo "Aguardando o serviço app estar acessível..."
-          for i in {1..10}; do
-            if docker exec $(docker ps -qf "name=app") curl -s http://app:5000; then
-              echo "Serviço disponível!"
-              break
-            fi
-            echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
-            sleep 5
-          done
-
-      # Adicionar um tempo para garantir que os serviços estejam prontos
-      - name: Sleep before ZAP
-        run: sleep 30
-
-      # Listar as redes para depuração
-      - name: List Docker Networks
-        run: docker network ls
-
       # Identificar o nome da rede gerada pelo Docker Compose
       - name: Get Docker Network Name
         id: network_name
