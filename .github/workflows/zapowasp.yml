@@ -55,15 +55,15 @@ jobs:
       - name: Get Docker Network Name
         id: network_name
         run: |
-          NETWORK_NAME=$(docker network ls --format '{{.Name}}' | grep -E 'default|app|bridge')
+          NETWORK_NAME=$(docker network ls --format '{{.Name}}' | grep -E 'decsecops_rnpesr')
           echo "Network name: $NETWORK_NAME"
           echo "network_name=$NETWORK_NAME" >> $GITHUB_ENV
 
-      # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
+      # Executar o ZAP Scan diretamente na rede identificada
       - name: Run ZAP Scan
         run: |
           mkdir -p ./relatorios/zap
-          docker run --rm --user root --network=$NETWORK_NAME --name zap-scan \
+          docker run --rm --user root --network=${{ env.network_name }} --name zap-scan \
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 && zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html"
         continue-on-error: true
