@@ -21,7 +21,7 @@ jobs:
 
       - name: Download and Inspect OWASP Dependency-Check
         run: |
-          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.3/dependency-check-8.4.3-release.zip # Substitua pela versão mais recente
           unzip dependency-check.zip -d dependency-check
           echo "Listing files to find the correct path:"
           ls -R dependency-check
