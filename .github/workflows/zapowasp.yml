@@ -26,10 +26,6 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Verificar a rede após o docker-compose up
-      - name: Verify Network
-        run: docker network ls
-
       # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
       - name: Run ZAP Scan
         run: |
@@ -38,8 +34,8 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              # Corrigindo o caminho do relatório
-              zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html"
+              # Removendo o parâmetro -r para evitar a geração do relatório
+              zap-baseline.py -t http://app:5000"
         continue-on-error: true
 
       # Parar os serviços com Docker Compose
