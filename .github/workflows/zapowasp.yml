@@ -57,9 +57,10 @@ jobs:
               set -x;
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
               echo 'Conteúdo de /zap/wrk antes do zap-baseline.py:' && ls -lah /zap/wrk &&
-              echo 'Comando Zap: zap-baseline.py -t http://app:5000 -o /zap/wrk/report.html -f html' &&
-              # Mudança destacada: usando -o e -f html
-              zap-baseline.py -t http://app:5000 -o /zap/wrk/report.html -f html &&
+              echo 'Versão do zap-baseline.py:' && zap-baseline.py --version &&
+              echo 'Comando Zap: zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html' &&
+              # Retornando ao parâmetro -r
+              zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html &&
               echo 'Conteúdo de /zap/wrk depois do zap-baseline.py:' && ls -lah /zap/wrk &&
               echo 'Verificando se o relatório foi realmente criado...' &&
               sleep 5 && # Adicionando um sleep extra
