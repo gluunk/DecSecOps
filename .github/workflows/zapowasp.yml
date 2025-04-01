@@ -53,34 +53,28 @@ jobs:
           mkdir -p ./relatorios/zap
           docker run --rm --user root --network=decsecops_rnpesr --name zap-scan \
             -v $(pwd)/relatorios/zap:/zap/wrk \
-            ghcr.io/zaproxy/zaproxy:stable bash -cx "
-              set -x;
+            ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              echo 'Conteúdo de /zap/wrk antes do zap-baseline.py:' && ls -lah /zap/wrk &&
-              echo 'Versão do zap-baseline.py:' && zap-baseline.py --version &&
-              echo 'Comando Zap: zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html' &&
-              # Retornando ao parâmetro -r
               zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html &&
-              echo 'Conteúdo de /zap/wrk depois do zap-baseline.py:' && ls -lah /zap/wrk &&
+              echo 'pwd: ' && pwd &&
+              echo 'listando arquivos no diretório /zap/wrk' &&
+              ls -lah /zap/wrk &&
+              echo 'find para buscar o arquivo report.html' &&
+              find /zap/wrk -name report.html &&
               echo 'Verificando se o relatório foi realmente criado...' &&
-              sleep 5 && # Adicionando um sleep extra
               if [ -f /zap/wrk/report.html ]; then
                 echo 'Relatório gerado com sucesso!';
               else
                 echo 'Erro: Relatório não encontrado!';
-                find / -name report.html;
                 exit 1;
               fi"
         continue-on-error: true
 
-      # Verificar se o arquivo do relatório foi gerado
-      - name: Check Report File
-        run: ls -lah ./relatorios/zap
-
-      # Exibir o relatório diretamente no console
-      - name: Show ZAP Report in Console
-        if: always()
-        run: cat ./relatorios/zap/report.html
+      # Exibir a saída do diretório no GitHub Actions antes de tentar o upload
+      - name: Show ZAP Report Directory in GitHub Actions
+        run: |
+          echo "Diretório de Relatórios ZAP:"
+          ls -lah ./relatorios/zap
 
       # Publicar o relatório HTML como artefato do GitHub Actions
       - name: Upload ZAP Report
