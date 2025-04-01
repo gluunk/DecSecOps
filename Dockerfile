@@ -7,6 +7,10 @@ WORKDIR /app
 # Copie apenas os arquivos necessários para instalar as dependências
 COPY requirements.txt ./
 
+
+# Instala as dependências do sistema
+RUN apt-get update && apt-get install -y curl
+
 # Instale as dependências do projeto
 RUN python -m venv /app/venv && \
     /app/venv/bin/pip install --upgrade pip && \
