@@ -29,9 +29,11 @@ jobs:
           if [ ! -f "dependency-check/bin/dependency-check.sh" ]; then
             echo "Attempting alternative path..."
             find dependency-check -name dependency-check.sh -exec chmod +x {} \;
-            PATH=$(find dependency-check -name dependency-check.sh)
+            SCRIPT_PATH=$(find dependency-check -name dependency-check.sh)
+          else
+             SCRIPT_PATH="dependency-check/bin/dependency-check.sh"
           fi
-          $PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report
+          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report
 
       # Fazer upload do relatório
       - name: Upload Dependency-Check Report
