@@ -27,6 +27,7 @@ jobs:
         run: docker-compose up -d --build
 
       # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
+      # Adicionando o parâmetro -I para ignorar avisos
       - name: Run ZAP Scan
         run: |
           docker run --rm --user root --network=decsecops_rnpesr --name zap-scan \
