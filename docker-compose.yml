@@ -9,29 +9,6 @@ services:
       - "5000:5000"
     networks:
       - rnpesr
-  #bandit: # Escaneando todos os container
-  #  build:
-  #    context: .
-  #    dockerfile: Dockerfile
-  #  command: /app/venv/bin/bandit -r /app
-  #  networks:
-  #    - rnpesr
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      - rnpesr
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - rnpesr
 networks:
   rnpesr:
     driver: bridge
