@@ -7,7 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-
+    networks:
+      - rnpesr
   #bandit: # Escaneando todos os container
   #  build:
   #    context: .
@@ -21,13 +22,19 @@ services:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-
+    networks:
+      - rnpesr
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - rnpesr
+networks:
+  rnpesr:
+    driver: bridge
 
 volumes:
   grafana_data:

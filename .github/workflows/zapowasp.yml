@@ -22,6 +22,10 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose version
 
+      # Criar a rede rnpesr se não existir
+      - name: Create Network
+        run: docker network create rnpesr || true
+
       # Iniciar os serviços com Docker Compose
       - name: Start Docker Compose
         run: docker-compose up -d --build
@@ -43,7 +47,7 @@ jobs:
       - name: Run ZAP Scan
         run: |
           mkdir -p ./relatorios/zap
-          docker run --rm --user root --name zap-scan \
+          docker run --rm --user root --network=rnpesr --name zap-scan \
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://app:5000 \
