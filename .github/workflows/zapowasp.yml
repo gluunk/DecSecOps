@@ -55,6 +55,8 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
+              echo 'Comando Zap: zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html' &&
+              pwd &&
               zap-baseline.py -t http://app:5000 -r /zap/wrk/report.html &&
               ls -lah /zap/wrk &&
               echo 'Verificando se o relatório foi realmente criado...' &&
@@ -62,6 +64,7 @@ jobs:
                 echo 'Relatório gerado com sucesso!';
               else
                 echo 'Erro: Relatório não encontrado!';
+                find / -name report.html;
                 exit 1;
               fi"
         continue-on-error: true
