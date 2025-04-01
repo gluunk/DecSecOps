@@ -30,23 +30,6 @@ jobs:
       - name: Verify Network
         run: docker network ls
 
-      # Aguardar o serviço "app" ficar acessível
-      - name: Wait for App to be Ready
-        run: |
-          echo "Aguardando o serviço app estar acessível..."
-          for i in {1..10}; do
-            if docker exec $(docker ps -qf "name=app") curl -s http://localhost:5000; then
-              echo "Serviço disponível!"
-              break
-            fi
-            echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
-            sleep 5
-          done
-
-      # Adiciona um tempo antes de rodar o ZAP
-      - name: Sleep before ZAP
-        run: sleep 30
-
       # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
       - name: Run ZAP Scan
         run: |
@@ -55,6 +38,7 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
+              # Corrigindo o caminho do relatório
               zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html"
         continue-on-error: true
 
