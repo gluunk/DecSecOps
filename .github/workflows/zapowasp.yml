@@ -36,7 +36,7 @@ jobs:
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
               # Adicionando o parâmetro -I para ignorar avisos
               zap-baseline.py -t http://app:5000"
-        continue-on-error: true
+        continue-on-error: false
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
