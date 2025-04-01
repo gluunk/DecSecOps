@@ -34,8 +34,8 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              # Usando -o com o tipo de relatório especificado e aspas duplas
-              zap-baseline.py -t http://app:5000 -I -o /zap/wrk/zap_report.html -f html"
+              # Adicionando o parâmetro -I para ignorar avisos
+              zap-baseline.py -t http://app:5000 -I"
         continue-on-error: true
 
       # Parar os serviços com Docker Compose
