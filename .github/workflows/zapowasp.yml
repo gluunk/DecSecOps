@@ -35,17 +35,17 @@ jobs:
         run: |
           mkdir -p ./relatorios/zap
           echo "Aguardando o serviço app estar acessível..."
-          for i in {1..10}; do
-            if curl -s http://app:5000 > /dev/null; then
-              echo "Serviço disponível!"
-              break
-            fi
-            echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
-            sleep 5
-          done
-          docker run --rm --user root --network="rnpesr" -v $(pwd)/relatorios/zap:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-            -t http://app:5000 \
-            -r /zap/wrk/report.html
+            for i in {1..10}; do
+              if docker run --rm --network="rnpesr" busybox wget -q -O- http://app:5000; then
+                echo "Serviço disponível!"
+                break
+              fi
+              echo "Tentativa $i: Serviço ainda não está acessível, aguardando..."
+              sleep 5
+            done
+            docker run --rm --user root --network="rnpesr" -v $(pwd)/relatorios/zap:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+              -t http://app:5000 \
+              -r /zap/wrk/report.html
         continue-on-error: true
 
       # Fazer upload do relatório do ZAP
