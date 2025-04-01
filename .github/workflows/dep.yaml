@@ -1,0 +1,29 @@
+name: Dependency Check
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Dependency Check
+        uses: jeremylong/dependency-check-action@v3
+        with:
+          project: 'DecSecOps'
+          scan_path: '.'
+          format: 'ALL'
+          output_directory: 'dependency-check-report'
+
+      - name: Upload Dependency-Check Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: ./dependency-check-report
