@@ -34,7 +34,7 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update &&
-              zap-baseline.py -t http://app:5000"
+              zap-baseline.py -t -I http://app:5000"
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
