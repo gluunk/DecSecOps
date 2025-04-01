@@ -11,18 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout do código
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Dependency Check
-        uses: jeremylong/dependency-check-action@v3
-        with:
-          project: 'DecSecOps'
-          scan_path: '.'
-          format: 'ALL'
-          output_directory: 'dependency-check-report'
-          suppression_file: 'suppression.xml'
+      # Baixar e inspecionar OWASP Dependency-Check
+      - name: Download and Inspect OWASP Dependency-Check
+        run: |
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
+          unzip dependency-check.zip -d dependency-check
+          echo "Listing files to find the correct path:"
+          ls -R dependency-check
 
+      - name: Run OWASP Dependency-Check
+        run: |
+          if [ ! -f "dependency-check/bin/dependency-check.sh" ]; then
+            echo "Attempting alternative path..."
+            find dependency-check -name dependency-check.sh -exec chmod +x {} \;
+            SCRIPT_PATH=$(find dependency-check -name dependency-check.sh)
+          else
+            SCRIPT_PATH="dependency-check/bin/dependency-check.sh"
+          fi
+          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report --exclude "external_libs/**" --exclude "*.dll"
+
+      # Fazer upload do relatório
       - name: Upload Dependency-Check Report
         uses: actions/upload-artifact@v4
         with:
