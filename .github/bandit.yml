@@ -2,12 +2,14 @@ name: Bandit Security Scan
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - "master"
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - "master"
 
 jobs:
-  build:
+  bandit-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,10 +25,10 @@ jobs:
           sudo apt-get install docker-compose-plugin -y
 
       - name: Build Docker image
-        run: docker compose build
+        run: docker compose build app
 
-      - name: Run Bandit scan
-        run: docker compose run bandit
+      - name: Run Bandit scan inside app container
+        run: docker compose run app /app/venv/bin/bandit -r /app
 
       - name: Clean up
         run: docker compose down
