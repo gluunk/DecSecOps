@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  bandit-scan:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,10 +23,10 @@ jobs:
           sudo apt-get install docker-compose-plugin -y
 
       - name: Build Docker image
-        run: docker compose build app
+        run: docker compose build
 
-      - name: Run Bandit scan inside app container
-        run: docker compose run app /app/venv/bin/bandit -r /app
+      - name: Run Bandit scan
+        run: docker compose run bandit
 
       - name: Clean up
         run: docker compose down

@@ -7,13 +7,13 @@ services:
       - "5000:5000"
     networks:
       - rnpesr
-  #bandit: # Escaneando todos os container
-  #  build:
-  #    context: .
-  #    dockerfile: Dockerfile
-  #  command: /app/venv/bin/bandit -r /app
-  #  networks:
-  #    - rnpesr
+  bandit: # Escaneando todos os container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /app/venv/bin/bandit -r /app
+    networks:
+      - rnpesr
   grafana:
     image: grafana/grafana:latest
     ports:
