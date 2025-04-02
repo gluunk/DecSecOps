@@ -1,4 +1,13 @@
 from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Length, ValidationError
+from todo_project.models import User
+from flask_login import current_user
+from prometheus_client import Counter  # Importe o Counter do prometheus_client
+
+# Crie o contador para task_creation_success_total
+task_creation_success_total = Counter('task_creation_success_total', 'Total successful task creations')
+
 
 # Form Fields
 from wtforms import StringField, PasswordField, TextAreaField, SubmitField

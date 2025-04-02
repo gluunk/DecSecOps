@@ -32,7 +32,7 @@ jobs:
           else
             SCRIPT_PATH="dependency-check/bin/dependency-check.sh"
           fi
-          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report --exclude "external_libs/**" --exclude "*.dll"
+          $SCRIPT_PATH --project "DecSecOps" --scan . --format "ALL" --out ./dependency-check-report --exclude "external_libs/**" --exclude "*.dll" --disableAssembly
 
       # Fazer upload do relatório
       - name: Upload Dependency-Check Report

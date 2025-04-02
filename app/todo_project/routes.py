@@ -1,15 +1,10 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, Response
+from prometheus_client import Counter, generate_latest, REGISTRY
 
 from todo_project import app, db, bcrypt
-
-# Import the forms
-from todo_project.forms import (LoginForm, RegistrationForm, UpdateUserInfoForm, 
-                                UpdateUserPassword, TaskForm, UpdateTaskForm)
-
-# Import the Models
+from todo_project.forms import (LoginForm, RegistrationForm, UpdateUserInfoForm,
+                                UpdateUserPassword, TaskForm, UpdateTaskForm, task_creation_success_total)  # Importa o contador
 from todo_project.models import User, Task
-
-# Import 
 from flask_login import login_required, current_user, login_user, logout_user
 
 
@@ -38,10 +33,8 @@ def login():
         return redirect(url_for('all_tasks'))
 
     form = LoginForm()
-    # After you submit the form
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        # Check if the user exists and the password is valid
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             task_form = TaskForm()
@@ -49,9 +42,9 @@ def login():
             return redirect(url_for('all_tasks'))
         else:
             flash('Login Unsuccessful. Please check Username Or Password', 'danger')
-    
+
     return render_template('login.html', title='Login', form=form)
-    
+
 
 @app.route("/logout")
 def logout():
@@ -92,6 +85,10 @@ def add_task():
         db.session.add(task)
         db.session.commit()
         flash('Task Created', 'success')
+
+        # Incrementa o contador aqui
+        task_creation_success_total.inc()
+
         return redirect(url_for('add_task'))
     return render_template('add_task.html', form=form, title='Add Task')
 
@@ -130,13 +127,13 @@ def delete_task(task_id):
 def account():
     form = UpdateUserInfoForm()
     if form.validate_on_submit():
-        if form.username.data != current_user.username:  
+        if form.username.data != current_user.username:
             current_user.username = form.username.data
             db.session.commit()
             flash('Username Updated Successfully', 'success')
             return redirect(url_for('account'))
     elif request.method == 'GET':
-        form.username.data = current_user.username 
+        form.username.data = current_user.username
 
     return render_template('account.html', title='Account Settings', form=form)
 
@@ -152,7 +149,6 @@ def change_password():
             flash('Password Changed Successfully', 'success')
             redirect(url_for('account'))
         else:
-            flash('Please Enter Correct Password', 'danger') 
+            flash('Please Enter Correct Password', 'danger')
 
     return render_template('change_password.html', title='Change Password', form=form)
-
