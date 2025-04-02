@@ -27,3 +27,9 @@ jobs:
           exit-code: "1"
           severity: "CRITICAL,HIGH"
           trivyignores: "./trivyignore.yaml"
+
+      - name: Trigger ZAP Security Scan
+        run: |
+          gh workflow run ZAPSecurityScan.yml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
