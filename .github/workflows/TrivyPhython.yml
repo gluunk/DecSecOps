@@ -30,6 +30,6 @@ jobs:
 
       - name: Dependency Check
         run: |
-          gh workflow run DepenciasZap.yml
+          gh workflow run DependenciasZap.yml
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
