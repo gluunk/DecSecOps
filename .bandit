@@ -1,12 +1,3 @@
 [bandit]
 # IDs das regras que você deseja ignorar
 skips = B101,B601
-
-# Diretórios ou arquivos que você deseja excluir
-exclude_dirs = tests,path/to/file
-
-# Nível mínimo de severidade a ser analisado
-severity = HIGH
-
-# Nível mínimo de confiança nos problemas reportados
-confidence = HIGH
