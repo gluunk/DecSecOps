@@ -37,3 +37,9 @@ jobs:
         with:
           name: dependency-check-report
           path: ./dependency-check-report
+
+      - name: Trigger ZAP Security Scan
+        run: |
+          gh workflow run ZAPSecurityScan.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

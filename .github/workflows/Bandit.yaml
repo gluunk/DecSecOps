@@ -31,6 +31,7 @@ jobs:
       - name: Run Bandit scan
         run: |
           docker compose run bandit bash -c "mkdir -p /app/reports && /app/venv/bin/bandit -r /app -c /app/.bandit -f json -o /app/reports/bandit-report.json --exit-zero"
+          docker cp $(docker compose ps -q bandit):/app/reports/bandit-report.json ./bandit-report.json
         continue-on-error: true
 
       # Fazer upload do relatório como artefato
@@ -38,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
-          path: app/reports/bandit-report.json
+          path: ./bandit-report.json
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
