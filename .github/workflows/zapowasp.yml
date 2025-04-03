@@ -55,7 +55,7 @@ jobs:
             -v $(pwd)/relatorios/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable bash -c "
               apt-get update && apt-get install -y dnsutils && sleep 5 && nslookup app && curl -s http://app:5000 &&
-              zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html -T traditional-html -I -1 &&
+              zap-baseline.py -t http://app:5000 -r /zap/wrk/zap_report.html -I -d &&
               echo 'Relatório gerado com nome zap_report.html' &&
               echo 'Conteúdo do diretório de relatórios:' &&
               ls -lah /zap/wrk &&
