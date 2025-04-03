@@ -1,0 +1,12 @@
+[bandit]
+# IDs das regras que você deseja ignorar (separados por vírgulas)
+skips = B101,B104,B301
+
+# Diretórios ou arquivos que você deseja excluir
+exclude_dirs = tests,migrations
+
+# Nível mínimo de severidade a ser analisado (LOW, MEDIUM, HIGH)
+severity = MEDIUM
+
+# Nível mínimo de confiança nos problemas reportados (LOW, MEDIUM, HIGH)
+confidence = MEDIUM
