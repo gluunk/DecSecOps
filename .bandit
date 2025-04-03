@@ -1,3 +1,11 @@
-[bandit]
-# IDs das regras que você deseja ignorar
-skips = B101,B601
+# Arquivo: .bandit
+skips:
+  - B101
+  - B601
+
+exclude_dirs:
+  - tests
+  - path/to/file
+
+severity: HIGH
+confidence: HIGH
