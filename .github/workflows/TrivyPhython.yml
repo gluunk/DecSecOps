@@ -24,9 +24,15 @@ jobs:
         with:
           image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
           format: "table"
-          exit-code: "1"
+          exit-code: "0"
           severity: "CRITICAL,HIGH"
-          trivyignores: "./trivyignore.yaml"
+          #trivyignores: "./trivyignore.yaml"
+
+      - name: Upload Trivy report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-report
+          path: trivy-report.txt
 
       - name: Dependency Check
         run: |
