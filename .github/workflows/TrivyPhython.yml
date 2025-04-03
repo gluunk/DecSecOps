@@ -12,30 +12,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      
       - name: Generate timestamp
         id: timestamp
-        run: echo "::set-output name=now::$(date +%s)"
+        run: echo "now=$(date +%s)" >> $GITHUB_ENV
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag my-image-name:${{ steps.timestamp.outputs.now }}
+        run: docker build . --file Dockerfile --tag my-image-name:${{ env.now }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "my-image-name:${{ steps.timestamp.outputs.now }}"
+          image-ref: "my-image-name:${{ env.now }}"
           format: "table"
-          exit-code: "0"
+          output: "./trivy-report.txt"  # Certifique-se do caminho completo
+          exit-code: "0"  # Não falhar mesmo se encontrar vulnerabilidades
           severity: "CRITICAL,HIGH"
-          #trivyignores: "./trivyignore.yaml"
+
+      - name: List generated files
+        run: ls -la  # Para verificar onde o arquivo foi gerado
 
       - name: Upload Trivy report artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: trivy-report
-          path: trivy-report.txt
-
-      - name: Dependency Check
-        run: |
-          gh workflow run DependenciasZap.yml
-        env:
-          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          path: ./trivy-report.txt  # Caminho completo para o arquivo
