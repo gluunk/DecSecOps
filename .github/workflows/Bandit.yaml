@@ -29,7 +29,6 @@ jobs:
       # Executar o Bandit scan, garantindo o uso do arquivo .bandit
       - name: Run Bandit scan
         run: docker compose run bandit /app/venv/bin/bandit -r /app -c /app/.bandit
-        continue-on-error: true
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
