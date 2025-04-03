@@ -1,4 +1,4 @@
-name: Estudo de Caso - Trivy
+name: Trivy
 
 on:
   push:

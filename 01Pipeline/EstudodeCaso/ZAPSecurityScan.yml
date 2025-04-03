@@ -31,9 +31,3 @@ jobs:
       - name: Stop Docker Compose
         if: always()
         run: docker-compose down
-
-      - name: Trigger ZAP Security Scan
-        run: |
-          gh workflow run ZAPSecurityScan.yml
-        env:
-          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
