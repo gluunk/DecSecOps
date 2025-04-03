@@ -37,6 +37,8 @@ jobs:
         with:
           name: bandit-report
           path: app/reports/bandit-report.json
+          if-no-files-found: error
+    
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
