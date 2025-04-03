@@ -22,14 +22,14 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose version
 
-      # Iniciar os serviços com Docker Compose
-      - name: Start Docker Compose
-        run: docker-compose up -d --build
+      # Construir os serviços definidos no docker-compose.yml
+      - name: Build Services
+        run: docker-compose build
 
-      # Executar o Bandit diretamente na mesma rede do Docker Compose
+      # Executar o Bandit scan, garantindo o uso do arquivo .bandit
       - name: Run Bandit scan
-        run: docker compose run bandit bandit -c .bandit
-        continue-on-error: true    
+        run: docker compose run bandit /app/venv/bin/bandit -r /app -c /app/.bandit
+        continue-on-error: true
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
