@@ -1,4 +1,4 @@
-name: ZAP Security Scan
+name: ZAP Security Scan - DAST
 
 on:
   workflow_dispatch:
@@ -11,14 +11,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install Docker Compose
-        run: |
-          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose version
+#      - name: Install Docker Compose
+#        run: |
+#          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#          chmod +x /usr/local/bin/docker-compose
+#          docker-compose version
 
-      - name: Start Docker Compose
-        run: docker-compose up -d --build
+#      - name: Start Docker Compose
+#        run: docker-compose up -d --build
 
       - name: Run ZAP Scan
         run: |

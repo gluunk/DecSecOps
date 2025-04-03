@@ -38,8 +38,8 @@ jobs:
           name: dependency-check-report
           path: ./dependency-check-report
 
-      - name: Trigger ZAP Security Scan
+      - name: Trigger Bandit - SAST
         run: |
-          gh workflow run ZAPSecurityScan.yml
+          gh workflow run Bandit.yaml
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

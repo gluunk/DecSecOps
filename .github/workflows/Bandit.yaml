@@ -1,11 +1,8 @@
 
-name: Bandit
+name: Bandit - SAST
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -41,7 +38,8 @@ jobs:
           name: bandit-report
           path: ./bandit-report.json
 
-      # Parar os serviços com Docker Compose
-      - name: Stop Docker Compose
-        if: always()
-        run: docker-compose down
+      - name: ZAP Security Scan - DAST
+        run: |
+          gh workflow run ZAPSecurityScan.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
