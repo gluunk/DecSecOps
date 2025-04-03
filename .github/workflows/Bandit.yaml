@@ -26,11 +26,10 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose up -d --build
 
-      # Executar o ZAP Scan diretamente na mesma rede do Docker Compose
-      # Adicionando o parâmetro -I para ignorar avisos
+      # Executar o Bandit diretamente na mesma rede do Docker Compose
       - name: Run Bandit scan
-        run: docker compose run bandit -c .bandit
-        continue-on-error: true
+        run: docker compose run bandit bandit -c .bandit
+        continue-on-error: true    
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
