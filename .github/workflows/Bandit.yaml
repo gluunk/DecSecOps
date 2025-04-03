@@ -33,12 +33,10 @@ jobs:
 
       # Fazer upload do relatório como artefato
       - name: Upload Bandit Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: app/reports/bandit-report.json
-          if-no-files-found: error
-    
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
