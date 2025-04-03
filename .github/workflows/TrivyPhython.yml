@@ -29,11 +29,14 @@ jobs:
           exit-code: "0"  # Não falhar mesmo se encontrar vulnerabilidades
           severity: "CRITICAL,HIGH"
 
-      - name: List generated files
-        run: ls -la  # Para verificar onde o arquivo foi gerado
-
       - name: Upload Trivy report artifact
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
           path: ./trivy-report.txt  # Caminho completo para o arquivo
+
+      - name: Dependency Check
+        run: |
+          gh workflow run DependenciasZap.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
