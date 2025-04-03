@@ -1,4 +1,4 @@
-name: Estudo de Caso - Trivy
+name: Bandit
 
 on:
   push:
