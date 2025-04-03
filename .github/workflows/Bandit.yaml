@@ -26,10 +26,17 @@ jobs:
       - name: Build Services
         run: docker-compose build
 
-      # Executar o Bandit scan, garantindo o uso do arquivo .bandit
+      # Executar o Bandit scan e salvar o relatório
       - name: Run Bandit scan
-        run: docker compose run bandit /app/venv/bin/bandit -r /app -c /app/.bandit
+        run: docker compose run bandit /app/venv/bin/bandit -r /app -c /app/.bandit -f json -o /app/reports/bandit-report.json
         continue-on-error: true
+
+      # Fazer upload do relatório como artefato
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: app/reports/bandit-report.json
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose

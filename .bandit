@@ -1,11 +1,7 @@
 # Arquivo: .bandit
 skips:
-  - B101
-  - B601
-
-exclude_dirs:
-  - tests
-  - path/to/file
+  - B201
+  - B104
 
 severity: HIGH
 confidence: HIGH
