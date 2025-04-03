@@ -71,14 +71,6 @@ jobs:
       # Visualizar o relatório diretamente no console
       - name: Visualizar Relatório ZAP
         run: cat ./relatorios/zap/zap_report.html || echo "Relatório não encontrado."
-    
-      # Publicar o relatório HTML como artefato do GitHub Actions
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZAP Report
-          path: ./relatorios/zap/zap_report.html
-          if: always()
 
       # Exibir a saída do diretório no GitHub Actions antes de tentar o upload
       - name: Show ZAP Report Directory in GitHub Actions
