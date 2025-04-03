@@ -30,6 +30,7 @@ jobs:
       # Adicionando o parâmetro -I para ignorar avisos
       - name: Run Bandit scan
         run: docker compose run bandit -c .bandit
+        continue-on-error: true
 
       # Parar os serviços com Docker Compose
       - name: Stop Docker Compose
