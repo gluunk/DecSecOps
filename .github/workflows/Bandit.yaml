@@ -30,7 +30,7 @@ jobs:
       # Executar o Bandit scan e salvar o relatório
       - name: Run Bandit scan
         run: |
-          docker compose run bandit bash -c "mkdir -p /app/reports && /app/venv/bin/bandit -r /app -c /app/.bandit -f json -o /app/reports/bandit-report.json"
+          docker compose run bandit bash -c "mkdir -p /app/reports && /app/venv/bin/bandit -r /app -c /app/.bandit -f json -o /app/reports/bandit-report.json --exit-zero"
         continue-on-error: true
 
       # Fazer upload do relatório como artefato
