@@ -19,7 +19,7 @@ jobs:
           curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
 
-      # Construir os serviços definidos no docker-compose.yml
+      # Construir os containers
       - name: Build Services
         run: docker-compose build
 
@@ -38,8 +38,8 @@ jobs:
           path: ./bandit-report.json
 
       # Chamar a próxima pipeline
-      - name: ZAP Security Scan - DAST
+      - name: Safety - SAST
         run: |
-          gh workflow run ZAPSecurityScan.yml
+          gh workflow run Safety.yml
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
