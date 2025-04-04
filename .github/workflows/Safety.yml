@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Safety Scan
         run: |
-          venv/bin/safety scan -r requirements.txt --output json > safety-report.json
+          venv/bin/safety check -r requirements.txt --json > safety-report.json
         continue-on-error: true
 
       # Upload do relatório
