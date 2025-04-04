@@ -12,27 +12,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Instalar dependências do projeto
+      # Criar venv e instalar dependências
       - name: Install Python Dependencies
         run: |
           python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+          venv/bin/pip install -r requirements.txt
 
       # Instalar o Safety
       - name: Install Safety
         run: |
-          source venv/bin/activate
-          pip install safety
+          venv/bin/pip install safety
 
-      # Executar o scan de dependências com o Safety
+      # Executar o scan com Safety
       - name: Run Safety Scan
         run: |
-          source venv/bin/activate
-          safety check -r requirements.txt --json > safety-report.json
-        continue-on-error: true  # Permite a continuação mesmo com vulnerabilidades
+          venv/bin/safety check -r requirements.txt --json > safety-report.json
+        continue-on-error: true
 
-      # Fazer upload do relatório
+      # Upload do relatório
       - name: Upload Safety Report
         uses: actions/upload-artifact@v4
         with:
