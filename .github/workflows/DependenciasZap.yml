@@ -1,6 +1,3 @@
-A mudança sugerida deu "ruim"
-chmod: cannot access 'dependency-check/bin/dependency-check.sh': No such file or directory
-Error: Process completed with exit code 1.
 name: Dependency Check - SAST
 
 on:

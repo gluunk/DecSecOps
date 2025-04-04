@@ -38,10 +38,3 @@ jobs:
         with:
           name: safety-report
           path: safety-report.json
-
-      # Chamar a próxima pipeline (opcional)
-      - name: Trigger Next Workflow
-        run: |
-          gh workflow run SomeNextWorkflow.yml
-        env:
-          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
