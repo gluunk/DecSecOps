@@ -18,7 +18,6 @@ jobs:
         run: |
           curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
-          docker-compose version
 
       # Construir os serviços definidos no docker-compose.yml
       - name: Build Services
@@ -31,13 +30,14 @@ jobs:
           docker cp bandit-container:/app/reports/bandit-report.json ./bandit-report.json
         continue-on-error: true
 
-      # Fazer upload do relatório como artefato
+      # Fazer upload do relatório e disponibilizar no Artifacts
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: ./bandit-report.json
 
+      # Chamar a próxima pipeline
       - name: ZAP Security Scan - DAST
         run: |
           gh workflow run ZAPSecurityScan.yml

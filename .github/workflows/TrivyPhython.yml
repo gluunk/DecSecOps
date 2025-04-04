@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      # Adicionando rastreabilidade
       - name: Generate timestamp
         id: timestamp
         run: echo "now=$(date +%s)" >> $GITHUB_ENV
@@ -20,21 +21,24 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag my-image-name:${{ env.now }}
 
+      # Executar o scaner e produzir o relatório
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "my-image-name:${{ env.now }}"
           format: "table"
-          output: "./trivy-report.txt"  # Certifique-se do caminho completo
+          output: "./trivy-report.txt"
           exit-code: "0"  # Não falhar mesmo se encontrar vulnerabilidades
-          severity: "CRITICAL,HIGH"
+          severity: "CRITICAL,HIGH" # Apenas vulnerabilidade Critica e Alta
 
+      # Fazer upload do relatório e disponibilizar no Artifacts
       - name: Upload Trivy report artifact
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
-          path: ./trivy-report.txt  # Caminho completo para o arquivo
+          path: ./trivy-report.txt 
 
+      # Chamar a próxima pipeline
       - name: Dependency Check
         run: |
           gh workflow run DependenciasZap.yml
