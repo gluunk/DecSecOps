@@ -1,0 +1,47 @@
+name: Safety - SAST
+
+on:
+  workflow_dispatch:
+
+jobs:
+  safety-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Instalar dependências do projeto
+      - name: Install Python Dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      # Instalar o Safety
+      - name: Install Safety
+        run: |
+          source venv/bin/activate
+          pip install safety
+
+      # Executar o scan de dependências com o Safety
+      - name: Run Safety Scan
+        run: |
+          source venv/bin/activate
+          safety check -r requirements.txt --json > safety-report.json
+        continue-on-error: true  # Permite a continuação mesmo com vulnerabilidades
+
+      # Fazer upload do relatório
+      - name: Upload Safety Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: safety-report
+          path: safety-report.json
+
+      # Chamar a próxima pipeline (opcional)
+      - name: Trigger Next Workflow
+        run: |
+          gh workflow run SomeNextWorkflow.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

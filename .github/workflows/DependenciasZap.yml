@@ -1,3 +1,6 @@
+A mudança sugerida deu "ruim"
+chmod: cannot access 'dependency-check/bin/dependency-check.sh': No such file or directory
+Error: Process completed with exit code 1.
 name: Dependency Check - SAST
 
 on:
@@ -17,14 +20,22 @@ jobs:
         run: |
           curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
           unzip dependency-check.zip -d dependency-check
-          chmod +x dependency-check/bin/dependency-check.sh
-          dependency-check/bin/dependency-check.sh \
+          
+          # Descobre o caminho correto do script
+          SCRIPT_PATH=$(find dependency-check -type f -name "dependency-check.sh" | head -n 1)
+          if [ -z "$SCRIPT_PATH" ]; then
+            echo "Script dependency-check.sh não encontrado!"
+            exit 1
+          fi
+
+          chmod +x "$SCRIPT_PATH"
+
+          "$SCRIPT_PATH" \
             --project "DecSecOps" \
             --scan . \
             --format "ALL" \
             --out ./dependency-check-report \
-            --exclude "external_libs/**" \
-            --exclude "*.dll" \
+            --exclude "external_libs/**,*.dll" \
             --disableAssembly
 
       # Fazer upload do relatório e disponibilizar no Artifacts
