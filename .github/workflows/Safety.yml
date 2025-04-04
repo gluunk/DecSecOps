@@ -1,10 +1,7 @@
 name: Safety - SAST
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   safety-scan:
@@ -26,6 +23,7 @@ jobs:
         run: |
           venv/bin/pip install safety
 
+      # Executar o Scan
       - name: Run Safety Scan
         run: |
           venv/bin/safety check -r requirements.txt --json > safety-report.json
@@ -37,3 +35,10 @@ jobs:
         with:
           name: safety-report
           path: safety-report.json
+
+      # Chamar a próxima pipeline
+      - name: ZAP Security Scan - DAST
+        run: |
+          gh workflow run ZAPSecurityScan.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
