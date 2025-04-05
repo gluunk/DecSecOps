@@ -96,7 +96,7 @@ jobs:
 
       - name: Run Safety Scan
         run: |
-          venv/bin/safety scan --full-report -r requirements.txt --output json > safety-report.json
+          venv/bin/safety check -r requirements.txt --json 2>&1 | grep -v 'DEPRECATED' > safety-report.json
         continue-on-error: true
 
       - name: Upload Safety Report
