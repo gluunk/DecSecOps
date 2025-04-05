@@ -1,4 +1,4 @@
-name: Full Security Pipeline - SAST & DAST
+name: Full Security Pipeline - SAST
 
 on:
   push:
