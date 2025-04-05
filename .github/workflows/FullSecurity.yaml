@@ -1,0 +1,113 @@
+name: Full Security Pipeline - SAST & DAST
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do repositório
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Gerar timestamp para nomear imagem Docker
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "now=$(date +%s)" >> $GITHUB_ENV
+
+      # Build da imagem Docker
+      - name: Build Docker Image
+        run: docker build . --file Dockerfile --tag my-image-name:${{ env.now }}
+
+      # Scan com Trivy
+      - name: Run Trivy Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "my-image-name:${{ env.now }}"
+          format: "table"
+          output: "./trivy-report.txt"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: ./trivy-report.txt
+
+      # Scan com OWASP Dependency-Check
+      - name: Run OWASP Dependency-Check
+        run: |
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.2/dependency-check-6.5.2-release.zip
+          unzip dependency-check.zip -d dependency-check
+          SCRIPT_PATH=$(find dependency-check -type f -name "dependency-check.sh" | head -n 1)
+          if [ -z "$SCRIPT_PATH" ]; then
+            echo "Script dependency-check.sh não encontrado!"
+            exit 1
+          fi
+          chmod +x "$SCRIPT_PATH"
+          "$SCRIPT_PATH" \
+            --project "DecSecOps" \
+            --scan . \
+            --format "ALL" \
+            --out ./dependency-check-report \
+            --exclude "external_libs/**,*.dll" \
+            --disableAssembly
+
+      - name: Upload Dependency-Check Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: ./dependency-check-report
+
+      # Instalar Docker Compose e executar Bandit no container
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.17.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+
+      - name: Build Services
+        run: docker-compose build
+
+      - name: Run Bandit Scan
+        run: |
+          docker compose run --name bandit-container bandit bash -c "mkdir -p /app/reports && /app/venv/bin/bandit -r /app -c /app/.bandit -f json -o /app/reports/bandit-report.json --exit-zero"
+          docker cp bandit-container:/app/reports/bandit-report.json ./bandit-report.json
+        continue-on-error: true
+
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: ./bandit-report.json
+
+      # Instalar e executar Safety
+      - name: Create Virtualenv & Install Requirements
+        run: |
+          python -m venv venv
+          venv/bin/pip install -r requirements.txt
+          venv/bin/pip install safety
+
+      - name: Run Safety Scan
+        run: |
+          venv/bin/safety scan --full-report -r requirements.txt --output json > safety-report.json
+        continue-on-error: true
+
+      - name: Upload Safety Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: safety-report
+          path: safety-report.json
+
+      # Chamar o ZAP DAST
+      - name: Trigger ZAP Security Scan - DAST
+        run: |
+          gh workflow run ZAPSecurityScan.yml
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}

@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   app:
     build:
@@ -5,9 +6,23 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    volumes:
+      - ./app/todo_project:/app/todo_project
+      - ./backups:/backups
     networks:
       - rnpesr
-  bandit: # Escaneando todos os container
+  backup:
+    image: python:3.8-slim
+    volumes:
+      - sqlite_data:/app/data:ro
+      - db_backups:/backups
+    entrypoint: ["bash", "-c", "cron -f"]
+    networks:
+      - rnpesr
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+  bandit:
     build:
       context: .
       dockerfile: Dockerfile
@@ -37,3 +52,5 @@ networks:
 
 volumes:
   grafana_data:
+  sqlite_data:
+  db_backups:
